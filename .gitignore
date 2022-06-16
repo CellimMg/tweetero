@@ -1,0 +1,4 @@
+#ignorar o codigo frontend
+tweteroo
+.vscode
+node_modules
