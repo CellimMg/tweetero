@@ -47,7 +47,6 @@ app.post("/sign-up", (req, res) => {
         if (isValidImageUrl(req.body['avatar'])) {
             _user.name = req.body['username'];
             _user.avatar = req.body['avatar'];
-
             res.status(201).send("Ok");
         } else {
             res.status(400).send("Informe uma url de imagem válida!");
@@ -82,6 +81,14 @@ app.get("/tweets", (_, res) => {
     }
 });
 
+
+app.get("/tweets/:username", (req, res) => {
+    const userTweets = tweets.filter(tweet => {
+        tweet.username == req.params.username;
+    });
+
+    res.send(userTweets);
+});
 
 
 
