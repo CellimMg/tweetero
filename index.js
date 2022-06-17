@@ -24,6 +24,15 @@ Tweets global -> um tweet é um objeto com a estrutura:
 const tweets = [];
 
 
+function isValidImageUrl(imageUrl) {
+    const regex = RegExp(/(http)?s?:?(\/\/[^"']*\.(?:png|jpg|jpeg|gif|png|svg))/);
+    if (imageUrl.match(regex)) {
+        return true;
+    }
+
+    return false;
+}
+
 //validar campo
 function isValid(param) {
     if (param == "" || param == null) {
@@ -34,20 +43,25 @@ function isValid(param) {
 
 //Auth
 app.post("/sign-up", (req, res) => {
-    if (isValid(req.body['username']) || isValid(req.body['avatar'])) {
-        res.status(400).send("Todos os dados são obrigatórios");
-    } else {
-        _user.name = req.body['username'];
-        _user.avatar = req.body['avatar'];
+    if (isValid(req.body['username']) && isValid(req.body['avatar'])) {
+        if (isValidImageUrl(req.body['avatar'])) {
+            _user.name = req.body['username'];
+            _user.avatar = req.body['avatar'];
 
-        res.status(201).send("Ok");
+            res.status(201).send("Ok");
+        } else {
+            res.status(400).send("Informe uma url de imagem válida!");
+        }
+
+    } else {
+        res.status(400).send("Todos os dados são obrigatórios");
     }
 });
 
 
 //Tweets
 app.post("/tweets", (req, res) => {
-    if (isValid(req.body['username']) || isValid(req.body['tweet'])) {
+    if (isValid(req.body['username']) && isValid(req.body['tweet'])) {
         const tweet = {
             username: req.body['username'],
             tweet: req.body['tweet']
