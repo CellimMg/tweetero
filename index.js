@@ -18,6 +18,7 @@ const _user = {};
 Tweets global -> um tweet é um objeto com a estrutura:
 {
     username: String,
+    avatar: String(url),
     tweet: String,
 }
 */
@@ -33,8 +34,14 @@ function isValidImageUrl(imageUrl) {
     return false;
 }
 
+function isValidPage(page) {
+    if (Number(page) >= 1)
+        return true;
+    return false;
+}
+
 //validar campo
-function isValid(param) {
+function isNotEmpty(param) {
     if (param == "" || param == null) {
         return false;
     }
@@ -43,7 +50,7 @@ function isValid(param) {
 
 //Auth
 app.post("/sign-up", (req, res) => {
-    if (isValid(req.body['username']) && isValid(req.body['avatar'])) {
+    if (isNotEmpty(req.body['username']) && isNotEmpty(req.body['avatar'])) {
         if (isValidImageUrl(req.body['avatar'])) {
             _user.name = req.body['username'];
             _user.avatar = req.body['avatar'];
@@ -60,9 +67,10 @@ app.post("/sign-up", (req, res) => {
 
 //Tweets
 app.post("/tweets", (req, res) => {
-    if (isValid(req.headers['user']) && isValid(req.body['tweet'])) {
+    if (isNotEmpty(req.headers['user']) && isNotEmpty(req.body['tweet'])) {
         const tweet = {
             username: req.headers['user'],
+            avatar: _user.avatar,
             tweet: req.body['tweet']
         };
         tweets.push(tweet);
@@ -73,11 +81,13 @@ app.post("/tweets", (req, res) => {
 });
 
 
-app.get("/tweets", (_, res) => {
-    if (tweets.length >= 10) {
-        res.send(tweets.slice(tweets.length - 10));
+app.get("/tweets", (req, res) => {
+
+    const page = req.query.page;
+    if (isNotEmpty(page) && isValidPage(page)) {
+        res.send(tweets.filter(_ => true).reverse().slice((page - 1) * 10, page * 10));
     } else {
-        res.send(tweets);
+        res.status().send("Informe uma página válida!");
     }
 });
 
@@ -86,7 +96,6 @@ app.get("/tweets/:username", (req, res) => {
     const userTweets = tweets.filter(tweet => {
         tweet.username == req.params.username;
     });
-
     res.send(userTweets);
 });
 
