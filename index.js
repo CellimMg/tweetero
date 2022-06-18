@@ -60,9 +60,9 @@ app.post("/sign-up", (req, res) => {
 
 //Tweets
 app.post("/tweets", (req, res) => {
-    if (isValid(req.body['username']) && isValid(req.body['tweet'])) {
+    if (isValid(req.headers['user']) && isValid(req.body['tweet'])) {
         const tweet = {
-            username: req.body['username'],
+            username: req.headers['user'],
             tweet: req.body['tweet']
         };
         tweets.push(tweet);
