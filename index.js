@@ -97,9 +97,12 @@ app.get("/tweets", (req, res) => {
 
 
 app.get("/tweets/:username", (req, res) => {
-    const userTweets = tweets.filter(tweet => {
-        tweet.username == req.params.username;
-    });
+    const userTweets = tweets.filter(tweet =>
+        tweet.username == req.params.username
+    );
+
+
+    console.log(tweets);
     res.send(userTweets);
 });
 
