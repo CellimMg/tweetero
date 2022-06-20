@@ -12,7 +12,7 @@ Usuario global -> um usuario é um objeto com a estrutura:
     avatar: String(url)
 }
 */
-const _user = {};
+const _users = [];
 
 /*
 Tweets global -> um tweet é um objeto com a estrutura:
@@ -52,8 +52,10 @@ function isNotEmpty(param) {
 app.post("/sign-up", (req, res) => {
     if (isNotEmpty(req.body['username']) && isNotEmpty(req.body['avatar'])) {
         if (isValidImageUrl(req.body['avatar'])) {
-            _user.name = req.body['username'];
+            const _user = {};
+            _user.username = req.body['username'];
             _user.avatar = req.body['avatar'];
+            _users.push(_user);
             res.status(201).send("Ok");
         } else {
             res.status(400).send("Informe uma url de imagem válida!");
@@ -70,7 +72,6 @@ app.post("/tweets", (req, res) => {
     if (isNotEmpty(req.headers['user']) && isNotEmpty(req.body['tweet'])) {
         const tweet = {
             username: req.headers['user'],
-            avatar: _user.avatar,
             tweet: req.body['tweet']
         };
         tweets.push(tweet);
@@ -82,10 +83,13 @@ app.post("/tweets", (req, res) => {
 
 
 app.get("/tweets", (req, res) => {
-
     const page = req.query.page;
     if (isNotEmpty(page) && isValidPage(page)) {
-        res.send(tweets.filter(_ => true).reverse().slice((page - 1) * 10, page * 10));
+        const tweetsReturn = tweets.filter(_ => true).reverse().slice((page - 1) * 10, page * 10);
+        tweetsReturn.forEach((value, index, array) => {
+            value.avatar = _users.filter(user => user.username == value.username)[0].avatar;
+        });
+        res.send(tweetsReturn);
     } else {
         res.status().send("Informe uma página válida!");
     }
