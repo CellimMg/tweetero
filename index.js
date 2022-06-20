@@ -85,7 +85,7 @@ app.post("/tweets", (req, res) => {
 app.get("/tweets", (req, res) => {
     const page = req.query.page;
     if (isNotEmpty(page) && isValidPage(page)) {
-        const tweetsReturn = tweets.filter(_ => true).reverse().slice((page - 1) * 10, page * 10);
+        const tweetsReturn = [...tweets].reverse().slice((page - 1) * 10, page * 10);
         tweetsReturn.forEach((value, index, array) => {
             value.avatar = _users.filter(user => user.username == value.username)[0].avatar;
         });
@@ -101,8 +101,6 @@ app.get("/tweets/:username", (req, res) => {
         tweet.username == req.params.username
     );
 
-
-    console.log(tweets);
     res.send(userTweets);
 });
 
